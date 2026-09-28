@@ -1,0 +1,37 @@
+# SQLite databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# SQLite / database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Generated data
+data/raw/*.csv
+data/processed/*.csv
+
+# Generated validation / SQL outputs
+outputs/validation/*.csv
+outputs/sql/*.csv
+outputs/sql/*.xlsx
+
+# Power BI temporary files
+powerbi/~$*
+powerbi/*.tmp
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
