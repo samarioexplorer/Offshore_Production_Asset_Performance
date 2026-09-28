@@ -266,7 +266,8 @@ CREATE TABLE IF NOT EXISTS Dim_Manifold (
     Water_Depth_ft REAL,
     Well_Count INTEGER,
     Installation_Date TEXT,
-    Status TEXT
+    Status TEXT,
+    FOREIGN KEY (Field_ID) REFERENCES Dim_Field(Field_ID)
 );
 
 
@@ -285,7 +286,9 @@ CREATE TABLE IF NOT EXISTS Dim_Well (
     Initial_Gas_Rate_Mscfd REAL,
     Decline_Rate_pct REAL,
     Initial_Water_Cut_pct REAL,
-    Artificial_Lift_Type TEXT
+    Artificial_Lift_Type TEXT,
+    FOREIGN KEY (Field_ID) REFERENCES Dim_Field(Field_ID),
+    FOREIGN KEY (Manifold_ID) REFERENCES Dim_Manifold(Manifold_ID)
 );
 
 
@@ -299,7 +302,8 @@ CREATE TABLE IF NOT EXISTS Dim_Equipment (
     Criticality TEXT NOT NULL,
     Installation_Date TEXT,
     Design_Life_Years REAL,
-    Status TEXT NOT NULL
+    Status TEXT NOT NULL,
+    FOREIGN KEY (Field_ID) REFERENCES Dim_Field(Field_ID)
 );
 
 
