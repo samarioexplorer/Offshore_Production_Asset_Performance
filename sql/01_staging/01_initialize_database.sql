@@ -201,19 +201,32 @@ CREATE TABLE IF NOT EXISTS stg_Fact_Intervention_Event (
     Status TEXT
 );
 
-
 CREATE TABLE IF NOT EXISTS stg_Fact_Production_Impact_Daily (
     Date TEXT,
     Well_ID TEXT,
-    Baseline_Oil_bbl REAL,
     Potential_Oil_bbl REAL,
+    Baseline_Oil_bbl REAL,
+    Downtime_Hours REAL,
+    Effective_Downtime_Hours REAL,
+    Available_hr REAL,
+    Downtime_Event_Count INTEGER,
+    Downtime_Deferred_Oil_bbl REAL,
+    Intervention_Flag INTEGER,
+    Intervention_ID TEXT,
+    Intervention_Type_ID TEXT,
+    Intervention_Days INTEGER,
+    Intervention_Recovery_pct REAL,
+    Expected_Oil_Rate_bopd REAL,
+    Intervention_Cost_USD REAL,
+    Intervention_Recovery_Oil_bbl REAL,
+    Intervention_Production_Loss_bbl REAL,
     Actual_Oil_bbl REAL,
     Deferred_Oil_bbl REAL,
-    Downtime_Hours REAL,
-    Intervention_Impact_bbl REAL,
-    Net_Production_Impact_bbl REAL
+    Production_Impact_bbl REAL,
+    Production_Availability_pct REAL,
+    Production_Efficiency_pct REAL,
+    Production_Impact_Flag INTEGER
 );
-
 
 -- ============================================================================
 -- 3. CORE DIMENSION TABLES
@@ -323,13 +336,13 @@ CREATE TABLE IF NOT EXISTS Dim_Scenario (
 CREATE TABLE IF NOT EXISTS Fact_Production_Daily (
     Date TEXT NOT NULL,
     Well_ID TEXT NOT NULL,
+    Potential_Oil_bbl REAL NOT NULL,
     Oil_bbl REAL NOT NULL,
     Gas_Mscf REAL NOT NULL,
     Water_bbl REAL NOT NULL,
     Liquid_bbl REAL NOT NULL,
     Runtime_hr REAL NOT NULL,
     Available_hr REAL NOT NULL,
-    Potential_Oil_bbl REAL NOT NULL,
 
     PRIMARY KEY (Date, Well_ID),
 
@@ -392,13 +405,28 @@ CREATE TABLE IF NOT EXISTS Fact_Intervention_Event (
 CREATE TABLE IF NOT EXISTS Fact_Production_Impact_Daily (
     Date TEXT NOT NULL,
     Well_ID TEXT NOT NULL,
-    Baseline_Oil_bbl REAL NOT NULL,
     Potential_Oil_bbl REAL NOT NULL,
+    Baseline_Oil_bbl REAL NOT NULL,
+    Downtime_Hours REAL NOT NULL,
+    Effective_Downtime_Hours REAL NOT NULL,
+    Available_hr REAL NOT NULL,
+    Downtime_Event_Count INTEGER NOT NULL,
+    Downtime_Deferred_Oil_bbl REAL NOT NULL,
+    Intervention_Flag INTEGER NOT NULL,
+    Intervention_ID TEXT,
+    Intervention_Type_ID TEXT,
+    Intervention_Days INTEGER NOT NULL,
+    Intervention_Recovery_pct REAL NOT NULL,
+    Expected_Oil_Rate_bopd REAL NOT NULL,
+    Intervention_Cost_USD REAL NOT NULL,
+    Intervention_Recovery_Oil_bbl REAL NOT NULL,
+    Intervention_Production_Loss_bbl REAL NOT NULL,
     Actual_Oil_bbl REAL NOT NULL,
     Deferred_Oil_bbl REAL NOT NULL,
-    Downtime_Hours REAL NOT NULL,
-    Intervention_Impact_bbl REAL NOT NULL,
-    Net_Production_Impact_bbl REAL NOT NULL,
+    Production_Impact_bbl REAL NOT NULL,
+    Production_Availability_pct REAL NOT NULL,
+    Production_Efficiency_pct REAL NOT NULL,
+    Production_Impact_Flag INTEGER NOT NULL,
 
     PRIMARY KEY (Date, Well_ID),
 
@@ -406,7 +434,13 @@ CREATE TABLE IF NOT EXISTS Fact_Production_Impact_Daily (
         REFERENCES Dim_Date(Date),
 
     FOREIGN KEY (Well_ID)
-        REFERENCES Dim_Well(Well_ID)
+        REFERENCES Dim_Well(Well_ID),
+
+    FOREIGN KEY (Intervention_ID)
+        REFERENCES Fact_Intervention_Event(Intervention_ID),
+
+    FOREIGN KEY (Intervention_Type_ID)
+        REFERENCES Dim_Intervention(Intervention_Type_ID)
 );
 
 
