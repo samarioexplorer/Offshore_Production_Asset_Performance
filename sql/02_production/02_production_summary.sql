@@ -217,8 +217,11 @@ SELECT
 
 FROM Fact_Production_Impact_Daily AS i
 
+LEFT JOIN Dim_Well AS w
+    ON i.Well_ID = w.Well_ID
+
 LEFT JOIN Dim_Field AS f
-    ON i.Field_ID = f.Field_ID
+    ON w.Field_ID = f.Field_ID
 
 GROUP BY
     f.Field_ID,
