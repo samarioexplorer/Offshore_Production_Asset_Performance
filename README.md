@@ -1,96 +1,758 @@
+# Offshore Production Asset Performance
 
-# Offshore Production & Asset Performance Intelligence
+## Executive Production, Reliability & Intervention Analytics
 
-An end-to-end offshore production analytics solution designed to monitor well performance, production losses, equipment reliability, intervention opportunities, and economic impact.
+An end-to-end offshore production asset analytics project designed to evaluate **production performance, availability, downtime, reliability, interventions, and operational impact** across a synthetic multi-well offshore asset.
 
-## Project Status
+The solution combines **Python, SQL/SQLite, Power BI, DAX, and structured validation** to transform operational data into an executive decision-support environment.
 
-**Phase 3 — Repository Initialization**
+The project is designed as a realistic energy analytics case study rather than a dashboard-only exercise. The emphasis is on **engineering logic, data architecture, reconciliation, semantic modeling, and decision-oriented analytics**.
 
-The analytical solution is currently under development.
+---
 
-## Business Objective
+## 1. Project Overview
 
-The project aims to identify offshore production underperformance, quantify production losses, diagnose reliability drivers, estimate economic impact, and prioritize production recovery opportunities.
+Offshore production assets operate under interconnected production, reliability, equipment, intervention, and operational constraints.
 
-## Engineering Scope
+This project addresses the following analytical questions:
 
-The fictional **Orion Deepwater Field** represents a deepwater subsea-to-FPSO development comprising:
+* How is the offshore asset performing over time?
+* How much production is being delivered relative to potential production?
+* What are the main downtime and reliability drivers?
+* Which wells and operational areas require attention?
+* How significant are interventions within the asset operating context?
+* What is the operational and economic significance of production-impact events?
+* How can management prioritize reliability and production improvement opportunities?
 
-* 24 production wells
-* 6 water-injection wells
-* 4 subsea manifolds
-* FPSO-based processing
-* Production, downtime, reliability, and intervention data
-* 2023–2026 analytical period
-
-## Solution Architecture
+The project produces an integrated analytical environment connecting:
 
 ```text
 Python
    ↓
-Synthetic Engineering Data
+Synthetic Operational Data
    ↓
-Validation & Transformation
+SQLite / SQL
    ↓
-SQLite / SQL Analytics
+Analytical Views
+   ↓
+Validation & Reconciliation
    ↓
 Power BI Semantic Model
    ↓
-Production Intelligence
-   ↓
-Reliability & Economic Analysis
-   ↓
-Intervention Opportunity
+Executive Intelligence
 ```
 
-## Technology Stack
+---
 
+## 2. Project Scale
+
+The analytical environment contains:
+
+| Metric                              |        Value |
+| ----------------------------------- | -----------: |
+| Producer wells                      |           24 |
+| Producer-day records                |       32,250 |
+| Operating period                    |   2023–2026 |
+| Baseline oil production             |  341.1 MMbbl |
+| Downtime events                     |          660 |
+| Total downtime                      | 16,925.16 hr |
+| Production-affected downtime events |          598 |
+| Intervention events                 |           39 |
+
+The datasets are synthetic and generated programmatically to provide a controlled environment for demonstrating engineering analytics, data architecture, and validation practices.
+
+---
+
+## 3. Engineering Objectives
+
+The project was developed around five primary objectives.
+
+### Production Performance
+
+Evaluate actual and potential oil production and monitor production availability across the asset and well population.
+
+### Reliability
+
+Analyze downtime events, failure causes, and reliability patterns to identify operational areas requiring attention.
+
+### Intervention Analytics
+
+Evaluate intervention activity and connect intervention types with operational and economic context.
+
+### Production Impact
+
+Quantify production impact at the daily operational grain while maintaining a clear distinction between operational impact and causal attribution.
+
+### Executive Decision Support
+
+Translate engineering and operational data into Power BI metrics and executive-level insights that can support production and reliability prioritization.
+
+---
+
+## 4. Solution Architecture
+
+The project follows a layered analytical architecture.
+
+### Python Engineering Layer
+
+Python is used to generate controlled synthetic operational data, initialize and populate the analytical database, create analytical views, and execute validation routines.
+
+### SQL Analytics Layer
+
+SQLite provides the analytical database environment.
+
+SQL is organized into functional layers:
+
+```text
+01_staging
+      ↓
+02_production
+      ↓
+03_reliability
+      ↓
+04_economics
+```
+
+### Power BI Semantic Layer
+
+Power BI consumes validated SQL analytical views and operational tables according to the reporting use case. In particular, `vw_Economics_Daily` provides the daily economics and production-impact analytical layer used by the reporting model. `Fact_Production_Daily` remains an underlying operational source table rather than the primary table used for those Power BI economic calculations.
+
+* production KPIs
+* availability analysis
+* downtime analysis
+* reliability analysis
+* intervention analysis
+* economic context
+* executive decision-support views
+
+### Validation Layer
+
+Validation is performed independently across Python, SQL, and Power BI to reduce the risk of inconsistencies between source data, analytical calculations, and reported metrics.
+
+
+## 5. Data Model
+
+The project uses a dimensional analytical structure containing operational facts, descriptive dimensions, and SQL-derived analytical views.
+
+### Core Operational Tables
+
+The principal operational datasets generated by the Python data-engineering layer include:
+
+* `Fact_Production_Daily`
+* `Fact_Downtime_Event`
+* `Fact_Intervention_Event`
+* `Fact_Production_Impact_Daily`
+
+These tables provide the underlying operational data used to build the analytical environment.
+
+### Analytical Views
+
+The final analytical and reporting layer uses SQL-derived views to present business-ready measures and reconciled metrics.
+
+A key example is:
+
+* `vw_Economics_Daily`
+
+`vw_Economics_Daily` is used by the Power BI semantic/reporting layer for the daily economic and production-impact analysis rather than directly consuming `Fact_Production_Daily` for those calculations.
+
+This distinction separates the **operational data layer** from the **analytical consumption layer** and allows SQL logic to be validated before metrics are exposed to Power BI.
+
+### Core Dimensions
+
+The project includes dimensions for:
+
+* Date
+* Well
+* Field
+* Equipment
+* Failure Cause
+* Intervention
+* Manifold
+* Scenario
+
+The model therefore separates descriptive attributes from operational measurements while allowing analytical views to consolidate the required metrics for reporting.
+
+## 6. Python Engineering Layer
+
+The Python layer is organized into functional modules.
+
+```text
+python/
+├── analytics/
+├── generation/
+├── transformation/
+└── validation/
+```
+
+### `python/generation/`
+
+Generates the synthetic operational environment, including:
+
+* dates
+* dimensions
+* production data
+* downtime events
+* intervention events
+* production-impact data
+* deterministic configuration and event parameters
+
+Key scripts include:
+
+```text
+generate_date.py
+generate_dimensions.py
+generate_production.py
+generate_downtime_events.py
+generate_intervention_events.py
+generate_production_impact.py
+```
+
+### `python/analytics/`
+
+Provides the database and analytical loading layer, including:
+
+* database initialization
+* staging loads
+* core table loads
+* production analytical views
+* reliability analytical views
+* economics analytical views
+* intervention economics views
+
+### `python/validation/`
+
+Provides automated inspection and validation routines covering:
+
+* integrated data validation
+* database structure
+* SQL views
+* SQLite data types
+* Power BI key/grain integrity
+* additional QA checks
+
+The validation layer is deliberately separated from the generation and analytics layers.
+
+### `python/transformation/`
+
+Currently serves as a package placeholder for future transformation-specific functionality. No separate transformation pipeline is claimed in the current implementation.
+
+---
+
+## 7. SQL Analytics Layer
+
+SQL is organized according to analytical responsibility:
+
+```text
+sql/
+├── 01_staging/
+├── 02_production/
+├── 03_reliability/
+└── 04_economics/
+```
+
+### Staging
+
+Database initialization and staging structures.
+
+### Production
+
+Production loading and production summary analytics.
+
+### Reliability
+
+Downtime and reliability summary analytics.
+
+### Economics
+
+Economic summaries and intervention economics.
+
+Quality and reconciliation are currently implemented through the Python validation layer and documented QA artifacts rather than a separate SQL quality layer.
+
+---
+
+## 8. Production Analytics
+
+Production performance is evaluated using actual and potential production.
+
+A central availability concept is:
+
+```text
+Production Availability %
+=
+Actual Oil / Potential Oil
+```
+
+The analytical model supports evaluation by:
+
+* date
+* well
+* asset
+* operational context
+
+The production engine includes controls for:
+
+* production continuity
+* potential-production logic
+* liquid reconciliation
+* negative production checks
+* duplicate well-day checks
+* runtime and availability consistency
+
+---
+
+## 9. Downtime & Reliability Analytics
+
+The downtime engine models operational events affecting the asset and its wells.
+
+The project contains:
+
+* 660 downtime events
+* 16,925.16 total downtime hours
+* 598 production-affected events
+
+Failure causes are modeled through a dedicated failure-cause dimension.
+
+The reliability analysis is intended to answer questions such as:
+
+* Which failure causes occur most frequently?
+* Where is downtime concentrated?
+* Which reliability patterns warrant operational attention?
+* How should reliability priorities be compared across wells or asset areas?
+
+Failure categories are therefore treated primarily as **descriptive reliability dimensions**.
+
+---
+
+## 10. Production Impact Analytical Boundary
+
+A deliberate analytical boundary is maintained between **operational production impact** and **causal failure attribution**.
+
+Production impact is evaluated at the daily operational grain through:
+
+```text
+Fact_Production_Impact_Daily
+```
+
+Failure categories are not used to claim that a particular category caused a specific amount of deferred production unless a validated causal model supports that conclusion.
+
+This distinction prevents the dashboard from presenting correlation or operational association as causal engineering evidence.
+
+This is an intentional design choice to maintain analytical credibility.
+
+---
+
+## 11. Intervention Analytics
+
+The intervention layer contains:
+
+**39 intervention events** across multiple intervention types.
+
+The modeled intervention types include:
+
+* Well Intervention
+* Workover
+* Artificial Lift Optimization
+* Subsea Repair
+* Flowline Remediation
+* Process Debottleneck
+
+Intervention analytics provides an operational and economic context for understanding intervention activity within the broader production asset.
+
+The project does not treat intervention economics as an isolated financial exercise; it is considered alongside production and reliability performance.
+
+---
+
+## 12. Power BI Executive Intelligence
+
+The primary Power BI deliverable is:
+
+```text
+powerbi/
+└── Offshore_Production_Asset_Performance_Executive_Intelligence.pbix
+```
+
+The Power BI environment integrates the validated analytical model into an executive reporting layer.
+
+The report is designed around:
+
+* production performance
+* production availability
+* downtime
+* reliability
+* interventions
+* operational impact
+* economic context
+
+The semantic layer uses DAX measures rather than relying exclusively on raw-column aggregation.
+
+---
+
+## 13. Semantic Modeling Principles
+
+The Power BI model was reviewed against several core modeling principles:
+
+### Fact / Dimension Separation
+
+Operational events and measurements remain separate from descriptive dimensions.
+
+### Relationship Integrity
+
+Relationships are designed to support predictable filter propagation and avoid unnecessary ambiguity.
+
+### Grain Awareness
+
+Measures are evaluated according to the grain of the underlying fact or analytical table.
+
+### Metric Consistency
+
+Core metrics are reconciled against the underlying Python and SQL layers.
+
+### Causal Discipline
+
+Failure-category analysis is not used to make unsupported causal claims about production losses.
+
+---
+
+## 14. Validation & QA Framework
+
+Validation was performed across multiple layers of the solution.
+
+### Python QA
+
+Programmatic checks cover:
+
+* row counts
+* null conditions
+* negative values
+* duplicate keys
+* production consistency
+* event integrity
+* database structures
+* analytical views
+* Power BI key/grain checks
+
+### SQL Reconciliation
+
+Cross-layer checks reconcile production and operational results between generated datasets, database tables, and analytical views.
+
+### Power BI QA
+
+Power BI-specific validation covers:
+
+* key and grain integrity
+* relationship configuration
+* semantic model behavior
+* DAX measure validation
+* filter interactions
+* benchmark reconciliation
+
+Supporting QA documentation is located under:
+
+```text
+documentation/qa/
+```
+
+Current QA documents include:
+
+```text
+phase_6b3_powerbi_key_grain_qa.md
+phase_6b4b_powerbi_relationship_qa.md
+```
+
+The project also includes an integrated validation output under:
+
+```text
+outputs/validation/
+```
+
+---
+
+## 15. Reproducibility
+
+The operational datasets and SQLite database are generated artifacts and are intentionally excluded from Git tracking.
+
+The repository therefore prioritizes the reproducible analytical logic:
+
+```text
+Python generation scripts
+        ↓
+Generated datasets
+        ↓
+SQLite database
+        ↓
+SQL analytical views
+        ↓
+Validation
+        ↓
+Power BI
+```
+
+This keeps the repository focused on the engineering process rather than storing unnecessary generated binaries and datasets.
+
+The deterministic configuration used by the generation layer helps maintain controlled synthetic-data behavior.
+
+---
+
+## 16. Repository Structure
+
+The implemented portfolio structure is:
+
+
+```text
+Offshore_Production_Asset_Performance/
+│
+├── README.md
+├── LICENSE
+├── requirements.txt
+├── .gitignore
+│
+├── data/
+│   ├── raw/
+│   ├── processed/
+│
+├── database/
+│
+├── documentation/
+│   ├── data_dictionary/
+│   ├── methodology/
+│   └── qa/
+│
+├── outputs/
+│   └── validation/
+│
+├── powerbi/
+│   ├── Offshore_Production_Asset_Performance_Executive_Intelligence.pbix
+│
+├── presentation/
+│   ├── executive/
+│   └── technical/
+│
+├── python/
+│   ├── analytics/
+│   ├── generation/
+│   ├── transformation/
+│   └── validation/
+│
+│
+└── sql/
+    ├── 01_staging/
+    ├── 02_production/
+    ├── 03_reliability/
+    ├── 04_economics/
+    └── 05_quality/
+```
+
+Some directories are retained as architectural placeholders for future expansion and currently contain no analytical artifacts.
+
+---
+
+## 17. Portfolio Deliverables
+
+### Power BI
+
+```text
+powerbi/Offshore_Production_Asset_Performance_Executive_Intelligence.pbix
+```
+
+### Executive Presentation
+
+```text
+presentation/executive/
+Project2_Offshore_Production_Executive_Presentation_Complete.pptx
+```
+
+### Technical Presentation
+
+```text
+presentation/technical/
+Project2_Offshore_Production_Technical_Project_Presentation.pptx
+```
+
+### Technical Documentation
+
+```text
+documentation/
+```
+
+The presentations provide two complementary views of the project:
+
+* **Executive presentation** — business, operational, and management perspective
+* **Technical presentation** — architecture, engineering logic, semantic modeling, and QA
+
+---
+
+## 18. Technology Stack
+
+| Technology     | Role                                                     |
+| -------------- | -------------------------------------------------------- |
+| Python         | Data generation, database loading, analytics, validation |
+| Pandas / NumPy | Data engineering and synthetic data generation           |
+| SQLite         | Analytical database                                      |
+| SQL            | Data loading, aggregation, analytical views              |
+| Power BI       | Semantic modeling and visualization                      |
+| DAX            | Analytical measures and KPI logic                        |
+| Git / GitHub   | Version control and portfolio delivery                   |
+| PowerPoint     | Executive and technical communication                    |
+
+---
+
+## 19. Key Engineering Principles
+
+This project was developed around several principles:
+
+### Engineering First
+
+Analytics should reflect operational realities rather than simply produce attractive visualizations.
+
+### Reconciliation Before Visualization
+
+Metrics should be validated against source and database layers before being considered presentation-ready.
+
+### Grain Awareness
+
+Every measure should be understood in relation to the grain of the underlying dataset.
+
+### Separation of Impact and Cause
+
+Operational production impact should not automatically be interpreted as causal attribution.
+
+### Reproducibility
+
+Synthetic data generation, analytical logic, and validation routines should be executable and inspectable.
+
+### Executive Relevance
+
+Technical analytics should ultimately support operational decisions and prioritization.
+
+---
+
+## 20. Portfolio Value
+
+This project demonstrates an end-to-end energy analytics workflow rather than a standalone BI dashboard.
+
+It demonstrates experience across:
+
+* offshore production analytics
+* production engineering concepts
+* reliability and downtime analysis
+* intervention analytics
+* synthetic operational data engineering
+* Python automation
+* SQL analytics
+* SQLite database design
+* Power BI semantic modeling
+* DAX
+* data-quality validation
+* cross-layer reconciliation
+* executive communication
+* Git/GitHub project organization
+
+The project is intended to demonstrate the ability to connect **engineering questions → data → analytical logic → validation → decision support**.
+
+---
+
+## 21. Relationship to Project 1
+
+This project forms the second major component of an offshore energy analytics portfolio.
+
+### Project 1 — Offshore Drilling
+
+**Question:**
+How efficiently are offshore wells being constructed?
+
+Focus:
+
+* drilling performance
+* ROP
+* NPT
+* rig performance
+* drilling cost
+* well/rig analytics
+
+### Project 2 — Offshore Production
+
+**Question:**
+How reliably is the offshore asset producing?
+
+Focus:
+
+* production
+* availability
+* downtime
+* reliability
+* interventions
+* production impact
+* economic context
+
+Together they create a broader operational analytics narrative across the offshore asset lifecycle:
+
+```text
+DRILL
+  ↓
+PRODUCE
+  ↓
+OPTIMIZE
+```
+
+---
+
+## 22. Future Portfolio Direction
+
+A future project can extend this foundation from operational analytics toward **asset decision intelligence**.
+
+Potential capabilities include:
+
+* asset and well prioritization
+* reliability-based ranking
+* intervention economics
+* scenario analysis
+* production opportunity screening
+* capital allocation
+* risk-based prioritization
+
+The objective would be to move from:
+
+```text
+"What happened?"
+```
+
+to:
+
+```text
+"Where should management act next?"
+```
+
+---
+
+## 23. Disclaimer
+
+This project uses synthetic data created for portfolio, educational, and analytical demonstration purposes.
+
+It does not represent actual production, operational, financial, or proprietary information from any offshore operator.
+
+Engineering calculations, economic assumptions, and operational scenarios are illustrative and should not be used directly for field decision-making.
+
+---
+
+## 24. Author
+
+**Aníbal Ceballos**
+
+Energy / Oil & Gas Analytics
+
+Focus areas:
+
+* Offshore Production Analytics
+* Drilling Analytics
 * Python
-* Pandas
-* NumPy
-* SQLite
 * SQL
 * Power BI
 * DAX
-* Git / GitHub
+* Engineering Data Analytics
+* Operational Decision Support
 
-## Repository Structure
+---
 
-```text
-data/             Source and processed datasets
-database/         SQLite analytical database
-python/           Data generation, transformation, validation and analytics
-sql/              SQL analytical layers
-powerbi/          Power BI model, DAX and screenshots
-documentation/    Architecture, methodology, data dictionary and QA
-presentation/     Executive and technical presentations
-outputs/          Generated analytical outputs
-```
+## License
 
-## Analytical Areas
-
-The completed solution will address:
-
-* Production surveillance
-* Well performance
-* Production decline
-* Water breakthrough
-* Production deferment
-* Downtime and failure analysis
-* Equipment reliability
-* Intervention economics
-* Production recovery opportunities
-
-## Dashboard Structure
-
-The planned Power BI solution contains four analytical pages:
-
-1. Executive Production Command Center
-2. Well Production Surveillance
-3. Production Loss & Reliability
-4. Intervention & Opportunity
-
-## Disclaimer
-
-This project uses synthetic engineering data created for portfolio, analytical, and educational purposes. It does not represent proprietary operational data from any real offshore operator or field.
+This project is released under the MIT License. See `LICENSE` for details.
